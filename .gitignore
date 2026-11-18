@@ -1,0 +1,22 @@
+# Foundry
+out/
+cache/
+broadcast/
+forge-cache/
+
+# Dependencies
+lib/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+
+# Coverage
+lcov.info
+coverage/

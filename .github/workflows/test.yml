@@ -1,0 +1,39 @@
+name: Foundry CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  test:
+    name: Build and test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: v1.9.0
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: lib
+          key: foundry-libs-${{ hashFiles('foundry.toml', 'remappings.txt') }}
+
+      - name: Install dependencies
+        run: |
+          forge install foundry-rs/forge-std@v1.9.6 --no-git
+          forge install OpenZeppelin/openzeppelin-contracts@v5.1.0 --no-git
+
+      - name: Check formatting
+        run: forge fmt --check
+
+      - name: Build
+        run: forge build --sizes
+
+      - name: Run tests
+        run: FOUNDRY_PROFILE=ci forge test -vvv
