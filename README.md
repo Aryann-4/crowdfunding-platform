@@ -215,34 +215,57 @@ cannot block other refunds.
 
 ## Deployment
 
-Copy the example environment file and fill in real values:
+The `Makefile` loads `.env` automatically, so `make deploy` can use `RPC_URL`,
+`PRIVATE_KEY`, and the optional settings directly from that file.
 
 ```bash
 cp .env.example .env
 ```
 
+Minimal `.env` for a local dry run:
+
 ```dotenv
-PRIVATE_KEY=0x...
-RPC_URL=https://...
-OWNER=0x...
-FEE_RECIPIENT=0x...
-PLATFORM_FEE_BPS=100
+# Anvil account #0 — public test key, never use for real funds
+PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+RPC_URL=http://127.0.0.1:8545
 ```
 
-`OWNER` defaults to the deployer, `FEE_RECIPIENT` defaults to `OWNER`, and
-`PLATFORM_FEE_BPS` defaults to `0`.
+For a testnet or mainnet deployment, use a funded key and a real RPC endpoint.
+Never commit `.env`.
 
-Simulate first, then broadcast:
+`OWNER` defaults to the deployer, `FEE_RECIPIENT` defaults to `OWNER`, and
+`PLATFORM_FEE_BPS` defaults to `0`. Empty or zero-address values fall back to those
+defaults.
+
+### Local end-to-end deployment
+
+Terminal 1:
 
 ```bash
-make deploy-dry
+make anvil
+```
 
-# or with Foundry directly
+Terminal 2 (with the Anvil key and RPC URL in `.env`):
+
+```bash
+make deploy-dry   # simulate only
+make deploy       # broadcast to local Anvil
+```
+
+### Testnet deployment
+
+```bash
+# .env: set PRIVATE_KEY to a funded testnet key and RPC_URL to the testnet RPC
+
+make deploy-dry
+make deploy
+```
+
+Equivalent direct Foundry commands:
+
+```bash
 forge script script/Deploy.s.sol --rpc-url "$RPC_URL"
 
-make deploy RPC_URL="$RPC_URL"
-
-# broadcast + verify
 forge script script/Deploy.s.sol \
   --rpc-url "$RPC_URL" \
   --broadcast \

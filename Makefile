@@ -1,6 +1,12 @@
 # Crowdfunding Platform — developer commands
 #
 # Requirements: Foundry (`curl -L https://foundry.paradigm.xyz | bash && foundryup`)
+#
+# Load project configuration from .env when present so `make deploy` works
+# without manually exporting RPC_URL / PRIVATE_KEY.
+
+-include .env
+export PRIVATE_KEY RPC_URL OWNER FEE_RECIPIENT PLATFORM_FEE_BPS
 
 .PHONY: install build test test-v gas snapshot fmt clean anvil deploy deploy-dry
 
