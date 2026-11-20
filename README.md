@@ -23,7 +23,7 @@ The contract is written in Solidity `^0.8.24` and uses OpenZeppelin Contracts fo
 | [![Launch campaign modal](docs/screenshots/launch.png)](https://aryann-4.github.io/crowdfunding-platform/?demo=launch) | [![Campaign details](docs/screenshots/detail.png)](https://aryann-4.github.io/crowdfunding-platform/?demo=detail) |
 
 > The hosted demo is an interactive UI with **simulated funds**. It demonstrates the
-> exact campaign, pledge, refund, and claim flows enforced by the Solidity contract.
+> campaign, pledge, unpledge, launch, and refund flows enforced by the Solidity contract.
 
 ## Repository Layout
 
