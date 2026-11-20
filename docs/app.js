@@ -4,12 +4,12 @@ const STORAGE_KEY = "fundchain-demo-v1";
 const DAY = 24 * 60 * 60 * 1000;
 
 const PALETTES = {
-  Climate: ["#1f5d5a", "#0b2b31"],
-  Health: ["#4b3a83", "#18152f"],
-  Education: ["#1d4f7c", "#0a2137"],
-  Media: ["#7c3f46", "#2a1217"],
-  Community: ["#63501f", "#281f0b"],
-  Technology: ["#2f3f6b", "#10162b"],
+  Climate: ["#2e5a4c", "#2e5a4c"],
+  Health: ["#6b4f3f", "#6b4f3f"],
+  Education: ["#34506b", "#34506b"],
+  Media: ["#70483f", "#70483f"],
+  Community: ["#5c5a32", "#5c5a32"],
+  Technology: ["#2c3e50", "#2c3e50"],
 };
 
 const EMOJIS = {
@@ -261,7 +261,7 @@ function cardTemplate(campaign) {
     <article class="card" data-campaign="${escapeHtml(campaign.id)}">
       <div class="card-art" style="--g1:${g1};--g2:${g2}">
         <span class="status-badge status-badge--${status}">
-          ${status === "live" ? '<span class="status-dot"></span>' : '<span class="status-dot"></span>'}
+          <span class="status-dot"></span>
           ${statusLabel(campaign)}
         </span>
         <span class="token-badge">${escapeHtml(campaign.token)}</span>
@@ -277,12 +277,7 @@ function cardTemplate(campaign) {
         </div>
         <div class="progress"><span style="width:${progress}%"></span></div>
         <div class="card-footer">
-          <span class="backers">
-            <span class="backers-dots" aria-hidden="true">
-              <span style="--a:#55d8ff"></span><span style="--a:#9d84ff"></span><span style="--a:#5df2b4"></span>
-            </span>
-            ${campaign.backers.toLocaleString("en-US")} backers
-          </span>
+          <span>${campaign.backers.toLocaleString("en-US")} backers</span>
           <span>${deadlineText(campaign)}</span>
         </div>
         <button class="card-cta ${status !== "live" ? "card-cta--muted" : ""}" type="button" data-view="${escapeHtml(campaign.id)}">${cta}</button>
@@ -316,12 +311,15 @@ function renderCampaigns() {
 
   grid.innerHTML = campaigns.length
     ? campaigns.map(cardTemplate).join("")
-    : '<div class="empty">No campaigns match this filter yet. Launch one to fill the grid.</div>';
+    : `<div class="empty">
+        <p>No campaigns match this filter yet.</p>
+        <button class="btn btn--outline" type="button" data-empty-launch>Launch a campaign</button>
+      </div>`;
 
   $$(".filter").forEach((button) => {
     const active = button.dataset.filter === state.filter;
     button.classList.toggle("is-active", active);
-    button.setAttribute("aria-selected", String(active));
+    button.setAttribute("aria-pressed", String(active));
   });
 }
 
@@ -353,27 +351,77 @@ function showToast(message) {
   toastTimer = setTimeout(() => toast.classList.remove("is-visible"), 3200);
 }
 
+let modalReturnFocus = null;
+
+function focusableIn(modal) {
+  return $$(
+    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    modal,
+  ).filter((element) => element.offsetParent !== null);
+}
+
 function openModal(id) {
-  $$(".modal.is-open").forEach((modal) => modal.classList.remove("is-open"));
+  const hadModal = Boolean(document.querySelector(".modal.is-open"));
+  if (!hadModal) modalReturnFocus = document.activeElement;
+
+  $$(".modal.is-open").forEach((modal) => {
+    modal.classList.remove("is-open");
+    modal.setAttribute("aria-hidden", "true");
+  });
+
   const modal = document.getElementById(id);
   if (!modal) return;
+
   modal.classList.add("is-open");
+  modal.setAttribute("aria-hidden", "false");
   document.body.style.overflow = "hidden";
-  const focusable = modal.querySelector("input, select, textarea, button");
-  if (focusable) setTimeout(() => focusable.focus(), 80);
+
+  const card = modal.querySelector(".modal-card");
+  if (card) card.setAttribute("tabindex", "-1");
+  const preferred =
+    modal.querySelector("input:not([type=hidden]), select, textarea") || card;
+  if (preferred) setTimeout(() => preferred.focus(), 40);
 }
 
 function closeModal(modal) {
   if (!modal) return;
   modal.classList.remove("is-open");
+  modal.setAttribute("aria-hidden", "true");
   if (!document.querySelector(".modal.is-open")) {
     document.body.style.overflow = "";
+    if (modalReturnFocus && typeof modalReturnFocus.focus === "function") {
+      modalReturnFocus.focus();
+    }
+    modalReturnFocus = null;
   }
 }
 
 function closeAllModals() {
-  $$(".modal.is-open").forEach((modal) => modal.classList.remove("is-open"));
+  $$(".modal.is-open").forEach((modal) => {
+    modal.classList.remove("is-open");
+    modal.setAttribute("aria-hidden", "true");
+  });
   document.body.style.overflow = "";
+  if (modalReturnFocus && typeof modalReturnFocus.focus === "function") {
+    modalReturnFocus.focus();
+  }
+  modalReturnFocus = null;
+}
+
+function setFieldError(id, message) {
+  const element = document.getElementById(id);
+  if (element) element.textContent = message || "";
+}
+
+function clearPledgeError() {
+  setFieldError("pledgeError", "");
+  $("#pledgeAmount").removeAttribute("aria-invalid");
+}
+
+function clearLaunchError() {
+  setFieldError("launchError", "");
+  $("#launchName").removeAttribute("aria-invalid");
+  $("#launchGoal").removeAttribute("aria-invalid");
 }
 
 function openWallet() {
@@ -428,6 +476,10 @@ function openDetail(id) {
     ? `You have pledged ${formatAmount(campaign, userPledge)} to this campaign.`
     : "";
   userPledgeEl.classList.toggle("is-visible", Boolean(userPledge));
+  $("#detailWithdraw").classList.toggle(
+    "is-visible",
+    status === "live" && userPledge > 0,
+  );
 
   const action = $("#detailAction");
   action.disabled = false;
@@ -442,15 +494,15 @@ function openDetail(id) {
   } else if (status === "funded") {
     action.textContent = "Goal reached";
     action.disabled = true;
-    action.classList.add("btn--soft");
+    action.classList.add("btn--outline");
   } else if (status === "upcoming") {
     action.textContent = "Starts soon";
     action.disabled = true;
-    action.classList.add("btn--soft");
+    action.classList.add("btn--outline");
   } else {
     action.textContent = "Campaign ended";
     action.disabled = true;
-    action.classList.add("btn--soft");
+    action.classList.add("btn--outline");
   }
 
   openModal("detailModal");
@@ -491,6 +543,7 @@ function openPledge(id) {
   input.value = "";
   input.step = campaign.token === "ETH" ? "0.01" : "1";
   input.placeholder = campaign.token === "ETH" ? "0.50" : "500";
+  clearPledgeError();
 
   const quickAmounts =
     campaign.token === "ETH" ? [0.1, 0.5, 1, 2] : [100, 500, 1000, 2500];
@@ -519,12 +572,17 @@ function confirmPledge() {
   const balance = state.wallet[key];
 
   if (!Number.isFinite(amount) || amount <= 0) {
-    showToast("Enter an amount greater than zero");
+    setFieldError("pledgeError", "Enter an amount greater than zero.");
+    input.setAttribute("aria-invalid", "true");
     input.focus();
     return;
   }
   if (amount > balance) {
-    showToast(`Insufficient demo balance · max ${campaign.token === "ETH" ? formatEth(balance) : formatUsd(balance)} ${campaign.token}`);
+    setFieldError(
+      "pledgeError",
+      `That is more than your demo balance — the maximum is ${campaign.token === "ETH" ? formatEth(balance) : formatUsd(balance)} ${campaign.token}.`,
+    );
+    input.setAttribute("aria-invalid", "true");
     input.focus();
     return;
   }
@@ -533,6 +591,7 @@ function confirmPledge() {
     return;
   }
 
+  clearPledgeError();
   const isFirstPledge = !state.pledges[campaign.id];
   state.wallet[key] = Number((balance - amount).toFixed(6));
   campaign.pledged = Number((campaign.pledged + amount).toFixed(6));
@@ -543,6 +602,28 @@ function confirmPledge() {
   render();
   closeModal($("#pledgeModal"));
   showToast(`Pledged ${formatAmount(campaign, amount)} to “${campaign.title}”`);
+}
+
+function withdrawPledge(id) {
+  const campaign = state.campaigns.find((item) => item.id === id);
+  if (!campaign) return;
+  const amount = state.pledges[id] || 0;
+  if (!amount) return;
+
+  if (statusOf(campaign) !== "live") {
+    showToast("Pledges can only be withdrawn while a campaign is live");
+    return;
+  }
+
+  const key = campaign.token === "ETH" ? "eth" : "usdc";
+  if (state.wallet) state.wallet[key] = Number((state.wallet[key] + amount).toFixed(6));
+  campaign.pledged = Number(Math.max(campaign.pledged - amount, 0).toFixed(6));
+  campaign.backers = Math.max(campaign.backers - 1, 0);
+  state.pledges[id] = 0;
+  save();
+  render();
+  openDetail(id);
+  showToast(`Withdrew ${formatAmount(campaign, amount)} from “${campaign.title}”`);
 }
 
 function refundPledge(id) {
@@ -577,16 +658,19 @@ function launchCampaign(event) {
   const story = $("#launchStory").value.trim();
 
   if (!title) {
-    showToast("Give your campaign a title");
+    setFieldError("launchError", "Give your campaign a title.");
+    $("#launchName").setAttribute("aria-invalid", "true");
     $("#launchName").focus();
     return;
   }
   if (!Number.isFinite(goal) || goal <= 0) {
-    showToast("Enter a funding goal greater than zero");
+    setFieldError("launchError", "Enter a funding goal greater than zero.");
+    $("#launchGoal").setAttribute("aria-invalid", "true");
     $("#launchGoal").focus();
     return;
   }
 
+  clearLaunchError();
   const [g1, g2] = paletteFor(category);
   const campaign = {
     id: `c${Date.now()}`,
@@ -625,6 +709,8 @@ function resetDemo() {
   state = { campaigns: makeSeed(), pledges: {}, wallet: null, filter: "all" };
   currentPledgeId = null;
   pendingPledgeId = null;
+  clearPledgeError();
+  clearLaunchError();
   closeAllModals();
   render();
   showToast("Demo data reset");
@@ -638,6 +724,7 @@ function wireEvents() {
       const target = button.dataset.open;
       if (target === "launch") {
         $("#launchForm").reset();
+        clearLaunchError();
         openModal("launchModal");
       }
     });
@@ -648,7 +735,31 @@ function wireEvents() {
   });
 
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") closeAllModals();
+    if (event.key === "Escape") {
+      closeAllModals();
+      return;
+    }
+    if (event.key !== "Tab") return;
+
+    const modal = document.querySelector(".modal.is-open");
+    if (!modal) return;
+    const focusable = focusableIn(modal);
+    if (!focusable.length) {
+      event.preventDefault();
+      return;
+    }
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (!modal.contains(document.activeElement)) {
+      event.preventDefault();
+      first.focus();
+    } else if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
   });
 
   $$(".filter").forEach((button) => {
@@ -660,6 +771,12 @@ function wireEvents() {
   });
 
   $("#campaignGrid").addEventListener("click", (event) => {
+    if (event.target.closest("[data-empty-launch]")) {
+      $("#launchForm").reset();
+      clearLaunchError();
+      openModal("launchModal");
+      return;
+    }
     const card = event.target.closest("[data-campaign]");
     if (!card) return;
     openDetail(card.dataset.campaign);
@@ -673,16 +790,24 @@ function wireEvents() {
     const button = event.target.closest("[data-quick]");
     if (!button) return;
     $("#pledgeAmount").value = button.dataset.quick;
+    clearPledgeError();
     $("#pledgeAmount").focus();
   });
 
   $("#confirmPledge").addEventListener("click", confirmPledge);
 
+  $("#pledgeAmount").addEventListener("input", clearPledgeError);
   $("#pledgeAmount").addEventListener("keydown", (event) => {
     if (event.key === "Enter") confirmPledge();
   });
 
+  $("#launchName").addEventListener("input", clearLaunchError);
+  $("#launchGoal").addEventListener("input", clearLaunchError);
   $("#launchForm").addEventListener("submit", launchCampaign);
+
+  $("#detailWithdraw").addEventListener("click", () => {
+    if (currentDetailId) withdrawPledge(currentDetailId);
+  });
 
   $("#detailAction").addEventListener("click", () => {
     if (!currentDetailId) return;

@@ -41,7 +41,9 @@ crowdfunding-platform/
 │   ├── index.html
 │   ├── styles.css
 │   ├── app.js
-│   ├── assets/emoji/
+│   ├── assets/
+│   │   ├── emoji/
+│   │   └── fonts/
 │   └── screenshots/
 ├── .github/workflows/test.yml        # CI: fmt, build sizes, full test suite
 ├── foundry.toml
