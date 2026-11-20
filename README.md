@@ -10,6 +10,21 @@ pledge while a campaign is live and may withdraw before the deadline. After the 
 The contract is written in Solidity `^0.8.24` and uses OpenZeppelin Contracts for
 `Ownable`, `ReentrancyGuard`, `SafeERC20`, and `IERC20`.
 
+## Live Demo
+
+**Try it now → [aryann-4.github.io/crowdfunding-platform](https://aryann-4.github.io/crowdfunding-platform/)**
+
+[![FundChain demo overview](docs/screenshots/overview.png)](https://aryann-4.github.io/crowdfunding-platform/)
+
+| Explore campaigns | Back a campaign |
+| --- | --- |
+| [![Campaign grid](docs/screenshots/campaigns.png)](https://aryann-4.github.io/crowdfunding-platform/#campaigns) | [![Pledge modal](docs/screenshots/pledge.png)](https://aryann-4.github.io/crowdfunding-platform/?demo=pledge) |
+| **Launch a campaign** | **Campaign details** |
+| [![Launch campaign modal](docs/screenshots/launch.png)](https://aryann-4.github.io/crowdfunding-platform/?demo=launch) | [![Campaign details](docs/screenshots/detail.png)](https://aryann-4.github.io/crowdfunding-platform/?demo=detail) |
+
+> The hosted demo is an interactive UI with **simulated funds**. It demonstrates the
+> exact campaign, pledge, refund, and claim flows enforced by the Solidity contract.
+
 ## Repository Layout
 
 ```
@@ -22,6 +37,12 @@ crowdfunding-platform/
 │       └── MockERC20.sol             # Mintable ERC-20 used by tests
 ├── script/
 │   └── Deploy.s.sol                  # Environment-driven deployment script
+├── docs/                             # Static demo dApp (GitHub Pages)
+│   ├── index.html
+│   ├── styles.css
+│   ├── app.js
+│   ├── assets/emoji/
+│   └── screenshots/
 ├── .github/workflows/test.yml        # CI: fmt, build sizes, full test suite
 ├── foundry.toml
 ├── remappings.txt
@@ -99,6 +120,27 @@ The suite covers:
   zero-value pledges, ETH sent to ERC-20 campaigns, and unknown campaign IDs.
 - Reentrancy simulation through a malicious ETH receiver.
 - Fuzz tests for ETH/ERC-20 pledge and refund amounts, plus partial unpledging.
+
+## Interactive Demo dApp
+
+The `docs/` folder contains a dependency-free static demo that mirrors the contract
+flows: browse campaigns, filter by status, pledge ETH/USDC, unpledge, launch a
+campaign, and claim a refund from a failed campaign. State is stored in
+`localStorage`, so the demo can be reset from the footer.
+
+Run it locally:
+
+```bash
+make demo
+# or: python3 -m http.server 8787 --directory docs
+# open http://127.0.0.1:8787/
+```
+
+It is deployed automatically from the repository's `docs/` folder via GitHub Pages:
+<https://aryann-4.github.io/crowdfunding-platform/>.
+
+The demo intentionally uses simulated balances. It does not sign transactions or
+connect to a deployed contract.
 
 ## Architecture
 

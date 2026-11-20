@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="FundChain is a decentralized crowdfunding demo for ETH and ERC-20 campaigns with guaranteed refunds." />
+  <title>FundChain — Decentralized Crowdfunding</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page-glow page-glow--one" aria-hidden="true"></div>
+  <div class="page-glow page-glow--two" aria-hidden="true"></div>
+
+  <header class="nav">
+    <a class="brand" href="#top" aria-label="FundChain home">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none">
+          <path d="M6 17.5 16 7l10 10.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M10 17.5V26h12v-8.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="16" cy="20.5" r="2.2" fill="currentColor"/>
+        </svg>
+      </span>
+      <span>FundChain</span>
+    </a>
+
+    <nav class="nav-links" aria-label="Main navigation">
+      <a href="#campaigns">Explore</a>
+      <a href="#how-it-works">How it works</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+
+    <div class="nav-actions">
+      <span class="demo-pill"><span class="demo-dot"></span> Demo</span>
+      <button class="btn btn--ghost wallet-btn" id="walletBtn" type="button">
+        <span class="wallet-icon" aria-hidden="true"></span>
+        <span id="walletLabel">Connect wallet</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="pulse"></span> On-chain crowdfunding for real-world ideas</div>
+        <h1>Back bold ideas.<br /><span class="gradient-text">Own the outcome.</span></h1>
+        <p class="hero-lead">
+          Launch a campaign in ETH or any ERC-20 token. Backers pledge in seconds,
+          withdraw while live, and get a guaranteed refund if the goal falls short.
+        </p>
+        <div class="hero-actions">
+          <button class="btn btn--primary" data-open="launch" type="button">
+            Launch a campaign
+            <span class="arrow" aria-hidden="true">→</span>
+          </button>
+          <a class="btn btn--soft" href="#campaigns">Explore campaigns</a>
+        </div>
+        <div class="trust-row" aria-label="Platform guarantees">
+          <span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5 17 5v5c0 4-3 6.5-7 7.5C6 16.5 3 14 3 10V5l7-2.5Z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="m6.8 9.8 2.1 2.1 4.3-4.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg> Refund protected</span>
+          <span><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="5" width="14" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3 8.5h14M7 3v3M13 3v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> 90-day max</span>
+          <span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5v15M5.5 6.5 10 2l4.5 4.5M5.5 13.5 10 18l4.5-4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> ETH + ERC-20</span>
+        </div>
+      </div>
+
+      <div class="hero-visual" aria-label="Featured campaign preview">
+        <div class="orbit orbit--one" aria-hidden="true"></div>
+        <div class="orbit orbit--two" aria-hidden="true"></div>
+
+        <article class="featured-card">
+          <div class="featured-art">
+            <img class="featured-art__icon" src="assets/emoji/sun.svg" alt="" />
+            <span class="status-badge status-badge--live"><span class="status-dot"></span> Live now</span>
+          </div>
+          <div class="featured-body">
+            <div class="featured-label">Featured · Climate · ETH</div>
+            <h2>Solar micro-grids for Kibera</h2>
+            <p>Clean, community-owned power for 240 homes and 12 local businesses.</p>
+            <div class="progress-meta">
+              <span><strong>31.4 ETH</strong> raised</span>
+              <span>70%</span>
+            </div>
+            <div class="progress"><span style="width:70%"></span></div>
+            <div class="featured-footer">
+              <div class="avatar-stack" aria-hidden="true">
+                <span style="--a:#f59e0b">A</span><span style="--a:#22d3ee">M</span><span style="--a:#a78bfa">J</span><span class="avatar-more">+181</span>
+              </div>
+              <span class="muted">9 days left</span>
+            </div>
+          </div>
+        </article>
+
+        <div class="float-card float-card--top">
+          <span class="float-icon float-icon--green" aria-hidden="true">✓</span>
+          <div><strong>Refund secured</strong><span>If the goal isn’t met</span></div>
+        </div>
+        <div class="float-card float-card--bottom">
+          <span class="float-icon float-icon--violet" aria-hidden="true">Ξ</span>
+          <div><strong>184 backers</strong><span>Pledged on-chain</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats" aria-label="Platform statistics">
+      <div class="stat-card">
+        <span class="stat-label">Pledged in ETH</span>
+        <strong class="stat-value">Ξ <span id="statEth">—</span></strong>
+        <span class="stat-note">Across all demo campaigns</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Pledged in USDC</span>
+        <strong class="stat-value">$<span id="statUsdc">—</span></strong>
+        <span class="stat-note">Stablecoin-funded projects</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Live campaigns</span>
+        <strong class="stat-value" id="statLive">—</strong>
+        <span class="stat-note">Open for contributions</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Total backers</span>
+        <strong class="stat-value" id="statBackers">—</strong>
+        <span class="stat-note">Simulated demo participants</span>
+      </div>
+    </section>
+
+    <section class="campaigns" id="campaigns">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">Explore the platform</div>
+          <h2>Campaigns worth backing</h2>
+          <p>Every campaign is transparent, time-boxed, and refund protected.</p>
+        </div>
+        <div class="filters" role="tablist" aria-label="Filter campaigns">
+          <button class="filter is-active" data-filter="all" role="tab" aria-selected="true" type="button">All</button>
+          <button class="filter" data-filter="live" role="tab" aria-selected="false" type="button">Live</button>
+          <button class="filter" data-filter="funded" role="tab" aria-selected="false" type="button">Funded</button>
+          <button class="filter" data-filter="failed" role="tab" aria-selected="false" type="button">Missed</button>
+        </div>
+      </div>
+
+      <div class="grid" id="campaignGrid"></div>
+    </section>
+
+    <section class="how" id="how-it-works">
+      <div class="section-head section-head--center">
+        <div class="section-kicker">How it works</div>
+        <h2>Fundraising without the middleman</h2>
+        <p>Smart contracts hold every pledge and enforce the rules automatically.</p>
+      </div>
+      <div class="steps">
+        <article class="step">
+          <span class="step-number">01</span>
+          <div class="step-icon"><img class="emoji-img" src="assets/emoji/rocket.svg" alt="" /></div>
+          <h3>Launch your campaign</h3>
+          <p>Set a goal, a deadline up to 90 days, and choose ETH or an approved ERC-20 token.</p>
+        </article>
+        <article class="step">
+          <span class="step-number">02</span>
+          <div class="step-icon"><img class="emoji-img" src="assets/emoji/handshake.svg" alt="" /></div>
+          <h3>Backers pledge on-chain</h3>
+          <p>Contributions are escrowed in the contract. Backers can withdraw while the campaign is live.</p>
+        </article>
+        <article class="step">
+          <span class="step-number">03</span>
+          <div class="step-icon"><img class="emoji-img" src="assets/emoji/scales.svg" alt="" /></div>
+          <h3>Settle automatically</h3>
+          <p>Hit the goal and the creator claims the funds. Miss it and every backer can claim a full refund.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="faq" id="faq">
+      <div class="section-head section-head--center">
+        <div class="section-kicker">Good to know</div>
+        <h2>Questions, answered</h2>
+      </div>
+      <div class="faq-grid">
+        <details open>
+          <summary>Is the demo using real funds?</summary>
+          <p>No. This demo runs entirely in your browser with simulated ETH and USDC balances. The underlying Solidity contracts and 65-test suite live in this repository.</p>
+        </details>
+        <details>
+          <summary>What happens if a campaign misses its goal?</summary>
+          <p>Pledges stay in the contract but become refundable. Each backer pulls their own refund after the deadline — no creator action required.</p>
+        </details>
+        <details>
+          <summary>Can I withdraw before the deadline?</summary>
+          <p>Yes. While a campaign is live, backers can unpledge part or all of their contribution. After the deadline, settlement rules apply.</p>
+        </details>
+        <details>
+          <summary>Which tokens are supported?</summary>
+          <p>Native ETH and any standard ERC-20 token. Campaigns are denominated in a single asset chosen at launch.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div class="cta-inner">
+        <div>
+          <div class="section-kicker">Ready when you are</div>
+          <h2>Turn your next idea into a movement.</h2>
+          <p>Launch a campaign in under a minute. No gatekeepers, no hidden terms.</p>
+        </div>
+        <button class="btn btn--primary btn--large" data-open="launch" type="button">Start a campaign <span class="arrow" aria-hidden="true">→</span></button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-top">
+      <a class="brand" href="#top">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none">
+            <path d="M6 17.5 16 7l10 10.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M10 17.5V26h12v-8.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="16" cy="20.5" r="2.2" fill="currentColor"/>
+          </svg>
+        </span>
+        <span>FundChain</span>
+      </a>
+      <p>A decentralized crowdfunding reference implementation built with Solidity, Foundry, and OpenZeppelin.</p>
+    </div>
+    <div class="footer-bottom">
+      <span>Demo UI · Simulated data · Not financial advice</span>
+      <div class="footer-links">
+        <a href="https://github.com/Aryann-4/crowdfunding-platform" target="_blank" rel="noreferrer">GitHub</a>
+        <button class="link-btn" id="resetDemo" type="button">Reset demo</button>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Wallet modal -->
+  <div class="modal" id="walletModal" aria-hidden="true">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card modal-card--small" role="dialog" aria-modal="true" aria-labelledby="walletTitle">
+      <button class="modal-close" data-close aria-label="Close">×</button>
+      <div class="modal-icon"><img class="emoji-img" src="assets/emoji/purse.svg" alt="" /></div>
+      <h3 id="walletTitle">Connect a demo wallet</h3>
+      <p class="modal-sub">Choose a simulated account to try the full flow. No real wallet or funds are involved.</p>
+      <button class="wallet-option" data-wallet="0xA14c...9C42" type="button">
+        <span class="wallet-avatar" style="--a:#22d3ee">A</span>
+        <span><strong>Demo account</strong><small>10.00 ETH · 25,000 USDC</small></span>
+        <span class="wallet-option__cta">Connect</span>
+      </button>
+      <button class="wallet-option" data-wallet="0x7B02...31E8" type="button">
+        <span class="wallet-avatar" style="--a:#a78bfa">B</span>
+        <span><strong>Second account</strong><small>2.50 ETH · 5,000 USDC</small></span>
+        <span class="wallet-option__cta">Connect</span>
+      </button>
+      <p class="microcopy">This is a UI demo. On-chain mode requires a deployed contract and a real wallet.</p>
+    </div>
+  </div>
+
+  <!-- Pledge modal -->
+  <div class="modal" id="pledgeModal" aria-hidden="true">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="pledgeTitle">
+      <button class="modal-close" data-close aria-label="Close">×</button>
+      <div class="modal-kicker" id="pledgeKicker">Back this campaign</div>
+      <h3 id="pledgeTitle">Campaign</h3>
+      <p class="modal-sub" id="pledgeSub"></p>
+      <div class="pledge-summary">
+        <div><span>Raised</span><strong id="pledgeRaised">—</strong></div>
+        <div><span>Goal</span><strong id="pledgeGoal">—</strong></div>
+        <div><span>Backers</span><strong id="pledgeBackers">—</strong></div>
+      </div>
+      <label class="field-label" for="pledgeAmount">Your pledge <span id="pledgeBalance"></span></label>
+      <div class="amount-wrap">
+        <input id="pledgeAmount" type="number" min="0" step="0.01" placeholder="0.00" inputmode="decimal" />
+        <span id="pledgeUnit">ETH</span>
+      </div>
+      <div class="quick-amounts" id="quickAmounts"></div>
+      <div class="modal-actions">
+        <button class="btn btn--soft" data-close type="button">Cancel</button>
+        <button class="btn btn--primary" id="confirmPledge" type="button">Pledge now</button>
+      </div>
+      <p class="microcopy">Demo only — no transaction will be signed. In the contract, funds are held in escrow and refundable if the goal is missed.</p>
+    </div>
+  </div>
+
+  <!-- Launch modal -->
+  <div class="modal" id="launchModal" aria-hidden="true">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card modal-card--wide" role="dialog" aria-modal="true" aria-labelledby="launchTitle">
+      <button class="modal-close" data-close aria-label="Close">×</button>
+      <div class="modal-kicker">New campaign</div>
+      <h3 id="launchTitle">Launch your idea</h3>
+      <p class="modal-sub">Set your funding target and timeline. Your campaign goes live immediately in this demo.</p>
+      <form id="launchForm">
+        <div class="form-grid">
+          <label class="field field--full">
+            <span class="field-label">Campaign title</span>
+            <input id="launchName" type="text" required maxlength="72" placeholder="e.g. Community solar for Oakwood" />
+          </label>
+          <label class="field">
+            <span class="field-label">Category</span>
+            <select id="launchCategory">
+              <option>Climate</option>
+              <option>Health</option>
+              <option>Education</option>
+              <option>Media</option>
+              <option>Community</option>
+              <option>Technology</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Raise in</span>
+            <select id="launchToken">
+              <option value="ETH">ETH</option>
+              <option value="USDC">USDC</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Funding goal</span>
+            <input id="launchGoal" type="number" required min="1" step="0.01" placeholder="25" />
+          </label>
+          <label class="field">
+            <span class="field-label">Duration</span>
+            <select id="launchDuration">
+              <option value="7">7 days</option>
+              <option value="14" selected>14 days</option>
+              <option value="30">30 days</option>
+              <option value="60">60 days</option>
+              <option value="90">90 days</option>
+            </select>
+          </label>
+          <label class="field field--full">
+            <span class="field-label">Short story</span>
+            <textarea id="launchStory" rows="3" maxlength="220" placeholder="What are you building, and why should backers care?"></textarea>
+          </label>
+        </div>
+        <div class="fee-note"><span class="info-dot">i</span> A 2.5% platform fee applies only to successfully funded campaigns.</div>
+        <div class="modal-actions">
+          <button class="btn btn--soft" data-close type="button">Cancel</button>
+          <button class="btn btn--primary" type="submit">Publish campaign <span class="arrow" aria-hidden="true">→</span></button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Campaign detail modal -->
+  <div class="modal" id="detailModal" aria-hidden="true">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card modal-card--detail" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+      <button class="modal-close" data-close aria-label="Close">×</button>
+      <div class="detail-art" id="detailArt">
+        <img class="detail-emoji" id="detailEmoji" src="assets/emoji/sun.svg" alt="" />
+        <span class="status-badge" id="detailStatus">Live</span>
+        <span class="token-badge" id="detailToken">ETH</span>
+      </div>
+      <div class="detail-body">
+        <div class="modal-kicker" id="detailCategory">Climate</div>
+        <h3 id="detailTitle">Campaign</h3>
+        <p class="detail-story" id="detailStory"></p>
+        <div class="detail-stats">
+          <div><span>Raised</span><strong id="detailRaised">—</strong></div>
+          <div><span>Goal</span><strong id="detailGoal">—</strong></div>
+          <div><span>Backers</span><strong id="detailBackers">—</strong></div>
+        </div>
+        <div class="progress"><span id="detailProgress"></span></div>
+        <div class="detail-meta">
+          <span id="detailCreator">by 0x...</span>
+          <span id="detailDeadline">—</span>
+        </div>
+        <div class="detail-user-pledge" id="detailUserPledge"></div>
+        <div class="modal-actions">
+          <button class="btn btn--soft" data-close type="button">Close</button>
+          <button class="btn btn--primary" id="detailAction" type="button">Back this campaign</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
